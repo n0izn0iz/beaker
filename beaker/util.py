@@ -293,6 +293,9 @@ def coerce_session_params(params):
         ('type', (str, NoneType), "Session type must be a string."),
         ('cookie_expires', (bool, datetime, timedelta, int),
          "Cookie expires was not a boolean, datetime, int, or timedelta instance."),
+        ('elevated_expires', (bool, datetime, timedelta, int),
+         "Elevated cookie expires was not a boolean, datetime, int, or timedelta instance."),
+        ('session_class', (str, NoneType), "Session class must be a class."),
         ('cookie_domain', (str, NoneType), "Cookie domain must be a string."),
         ('cookie_path', (str, NoneType), "Cookie path must be a string."),
         ('id', (str,), "Session id must be a string."),
@@ -311,10 +314,11 @@ def coerce_session_params(params):
         ('data_serializer', (str,), "data_serializer must be a string.")
     ]
     opts = verify_rules(params, rules)
-    cookie_expires = opts.get('cookie_expires')
-    if cookie_expires and isinstance(cookie_expires, int) and \
-       not isinstance(cookie_expires, bool):
-        opts['cookie_expires'] = timedelta(seconds=cookie_expires)
+    for cookie_name in ('elevated_expires', 'cookie_expires'):
+        cookie_expires = opts.get(cookie_name)
+        if cookie_expires and isinstance(cookie_expires, int) and \
+           not isinstance(cookie_expires, bool):
+            opts[cookie_name] = timedelta(seconds=cookie_expires)
     if opts['timeout'] is not None and not opts['save_accessed_time']:
         raise Exception("save_accessed_time must be true to use timeout")
     return opts
