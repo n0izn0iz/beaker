@@ -1,23 +1,23 @@
-from .session import *
+from .session import Session
 
 
-class UpgradableCookieSession(CookieSession):
-    "A CookieSession with different expiry parameters for elevated privileges"
+class UpgradableSession(Session):
+    "A Session with different expiry parameters for elevated privileges"
 
     def __init__(self, request, elevated=False,
                  cookie_expires=True, elevated_expires=False, **kwargs):
         self.elevated = elevated
         self.elevated_expires = elevated_expires
         self.basic_expires = cookie_expires
-        super(UpgradableCookieSession, self).__init__(
+        super(UpgradableSession, self).__init__(
             request, cookie_expires=cookie_expires, **kwargs)
 
     def _set_cookie_expires(self, expires):
         if self.elevated:
-            self.expires = elevated_expires
+            self.cookie_expires = self.elevated_expires
         else:
-            self.expires = basic_expires
-        super(UpgradableCookieSession, self)._set_cookie_expires(expires)
+            self.cookie_expires = self.basic_expires
+        super(UpgradableSession, self)._set_cookie_expires(expires)
 
     def elevate_privilege(self, elevated=True):
         # Indicate whether a session has elevated privileges.
