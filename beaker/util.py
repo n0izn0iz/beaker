@@ -319,7 +319,7 @@ def coerce_session_params(params):
         if cookie_expires and isinstance(cookie_expires, int) and \
            not isinstance(cookie_expires, bool):
             opts[cookie_name] = timedelta(seconds=cookie_expires)
-    if opts['timeout'] is not None and not opts['save_accessed_time']:
+    if opts.get('timeout', None) is not None and not opts.get('save_accessed_time', None):
         raise Exception("save_accessed_time must be true to use timeout")
     return opts
 
